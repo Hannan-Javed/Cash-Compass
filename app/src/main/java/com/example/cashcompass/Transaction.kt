@@ -1,27 +1,38 @@
 package com.example.cashcompass
 
+data class Tally(
+    val amount: Double,
+    val count: Int
+)
+
 data class Transaction(
-    val id: Int = generateId(),
+    private var id: Int? = null,
     val title: String,
-    private val _values: MutableList<Double> = mutableListOf()
+    private val _amounts: MutableList<Double> = mutableListOf()
 ) {
-    companion object {
-        private var currentId: Int = 0 // Static variable to keep track of the last assigned ID
-        private fun generateId(): Int {
-            currentId++
-            return currentId
+
+    fun setId(id: Int) {
+        this.id = id
+    }
+
+    fun addAmount(value: Double) {
+        _amounts.add(value)
+    }
+
+    fun getFirstAmount(): Double {
+        return _amounts.first()
+    }
+
+    fun getTalliedAmounts(): List<Tally> {
+        val amountCountMap = mutableMapOf<Double, Int>()
+
+        for (amount in _amounts) {
+            amountCountMap[amount] = amountCountMap.getOrDefault(amount, 0) + 1
         }
+        return amountCountMap.map { (amount, count) -> Tally(amount, count) }
     }
 
-    fun addValue(value: Double) {
-        _values.add(value)
-    }
-
-    fun getValues(): List<Double> {
-        return _values.toList() // Return a copy of the list
-    }
-
-    fun getTotalValue(): Double {
-        return _values.sum() // Sum up the values in the list
+    fun getTotalAmount(): Double {
+        return _amounts.sum()
     }
 }

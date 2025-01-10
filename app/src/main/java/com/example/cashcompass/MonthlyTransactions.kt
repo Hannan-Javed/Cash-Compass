@@ -1,28 +1,34 @@
 package com.example.cashcompass
-import com.example.cashcompass.Transaction
+
+data class MonthlySpending(
+    val title: String,
+    val currency: String,
+    val totalValue: Double
+)
 
 data class MonthlyTransactions(
-    var month: Int,
+    val month: Int,
     val year: Int,
-    private var transactions: MutableList<Transaction>? = mutableListOf()
+    var sections: MutableList<TransactionSection> = mutableListOf()
 ) {
+    fun addSection(section: TransactionSection) {
+        sections.add(section)
+    }
 
-    fun addTransaction(transaction: Transaction) {
-        if (transactions == null) {
-            transactions = mutableListOf()
+    fun getSectionById(sectionId: Int): TransactionSection? {
+        return sections.find { it.id == sectionId }
+    }
+
+    fun addTransactionToSection(sectionId: Int, transaction: Transaction) {
+        val section = getSectionById(sectionId)
+        section?.addTransaction(transaction)
+    }
+
+    fun getMonthlySpending(): List<MonthlySpending> {
+        val totalSpending = mutableListOf<MonthlySpending>()
+        for (section in sections) {
+            totalSpending.add(MonthlySpending(section.title, section.currency, section.getTotalAmount()))
         }
-        transactions?.add(transaction)
-    }
-
-    fun getTransactions(): List<Transaction> {
-        return transactions!!.toList()
-    }
-
-    fun getTotalValue(): Double {
-        return transactions!!.sumOf { it.getTotalValue() }
-    }
-
-    fun getTransactionCount(): Int {
-        return transactions!!.size
+        return totalSpending
     }
 }

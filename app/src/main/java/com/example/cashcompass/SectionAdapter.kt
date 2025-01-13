@@ -37,7 +37,7 @@ class SectionAdapter(
         }
     }
 
-    val updateSectionSelection = { sectionId: Int ->
+    val updateSectionSelection = { sectigonId: Int ->
             val previousSelected = selectedSectionId
             selectedSectionId = sectionId
             val previousIndex = monthlyTransactions.sections.indexOfFirst { it.id == previousSelected }
@@ -92,8 +92,8 @@ class SectionAdapter(
     }
 
     override fun onBindViewHolder(holder: SectionViewHolder, position: Int) {
-        holder.bind(sections[position])
+        holder.bind(monthlyTransactions.sections[position])
     }
 
-    override fun getItemCount(): Int = sections.size
+    override fun getItemCount(): Int = monthlyTransactions.sections.size
 }

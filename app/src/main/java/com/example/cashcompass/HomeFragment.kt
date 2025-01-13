@@ -88,22 +88,24 @@ class HomeFragment : Fragment() {
     private fun setupButtonClick() {
         buttonAddSection.setOnClickListener {
             val newSection = TransactionSection(
-                id = monthlyTransactions.sections.size + 1,
+                id = monthlyTransactions.sections.last().id + 1,
                 title = "New Section",
                 currency = "USD"
             )
             monthlyTransactions.addSection(newSection)
             sectionAdapter.updateSectionSelection(newSection.id)
             // now selectedSection is updated to the new section inside adapter
-            sectionAdapter.notifyItemChanged(selectedSection - 1)
+            sectionAdapter.notifyItemChanged(monthlyTransactions.sections.size - 1)
+
         }
 
         buttonAddTransaction.setOnClickListener {
             monthlyTransactions.addTransactionToSection(
-                monthlyTransactions.sections[selectedSection - 1].id,
+                selectedSectionId,
                 randomTransactions[(0..3).random()]
             )
-            sectionAdapter.notifyItemChanged(selectedSection - 1)
+            sectionAdapter.
+                    notifyItemChanged(monthlyTransactions.sections.indexOfFirst { it.id == selectedSectionId })
         }
     }
 }

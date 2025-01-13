@@ -37,7 +37,7 @@ class SectionAdapter(
         }
     }
 
-    val updateSectionSelection = { sectigonId: Int ->
+    val updateSectionSelection = { sectionId: Int ->
             val previousSelected = selectedSectionId
             selectedSectionId = sectionId
             val previousIndex = monthlyTransactions.sections.indexOfFirst { it.id == previousSelected }

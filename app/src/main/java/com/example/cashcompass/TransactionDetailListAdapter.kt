@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class TransactionDetailListAdapter(
     private val transactionsList: List<TalliedAmounts>,
-    private var transactionSection: Int,
+    private var transactionSectionId: Int,
     private val updateSectionSelection: (Int) -> Unit
     ) : RecyclerView.Adapter<TransactionDetailListAdapter.TallyViewHolder>() {
 
@@ -21,7 +21,7 @@ class TransactionDetailListAdapter(
             amountTextView.text = talliedAmounts.amount.toString()
 
             itemView.setOnClickListener {
-                updateSectionSelection(transactionSection)
+                updateSectionSelection(transactionSectionId)
             }
 
         }

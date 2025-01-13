@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class TransactionAdapter(
     private val transactions: List<Transaction>,
-    private var transactionSection: Int,
+    private var transactionSectionId: Int,
     private val updateSectionSelection: (Int) -> Unit
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
 
@@ -32,7 +32,7 @@ class TransactionAdapter(
             transactionsListRecyclerView.layoutManager = LinearLayoutManager(itemView.context)
             transactionsListRecyclerView.adapter = TransactionDetailListAdapter(
                 transaction.getTalliedAmounts(),
-                transactionSection,
+                transactionSectionId,
                 updateSectionSelection
                 )
 
@@ -47,7 +47,7 @@ class TransactionAdapter(
                     expandedPositions.add(position)
                 }
                 notifyItemChanged(position)
-                updateSectionSelection(transactionSection)
+                updateSectionSelection(transactionSectionId)
             }
         }
     }

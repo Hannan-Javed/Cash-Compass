@@ -52,7 +52,7 @@ class HomeFragment : Fragment() {
             )
         )
     )
-    private var selectedSection: Int = 1
+    private var selectedSectionId: Int = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,10 +77,10 @@ class HomeFragment : Fragment() {
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         sectionAdapter = SectionAdapter(
-            monthlyTransactions.sections,
-            selectedSection
-        ) { section ->
-            selectedSection = section
+            monthlyTransactions,
+            selectedSectionId
+        ) { sectionId ->
+            selectedSectionId = sectionId
         }
         recyclerView.adapter = sectionAdapter
     }

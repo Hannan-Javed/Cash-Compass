@@ -32,7 +32,7 @@ class SectionAdapter(
 
             // Update selected section if necessary
             if (selectedSectionId == sectionId) {
-                updateSectionSelection(monthlyTransactions.sections.last().id)
+                updateSectionSelection(monthlyTransactions.sections.first().id)
             }
         }
     }

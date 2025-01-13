@@ -5,45 +5,49 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class TransactionAdapter(private val transactions: MutableList<Transaction>) :
-    RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
+
+class TransactionAdapter(
+    private val transactions: List<Transaction>,
+    private var transactionSection: Int,
+    private val updateSectionSelection: (Int) -> Unit
+) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
+
+    // Set to keep track of expanded item positions
+    private val expandedPositions = mutableSetOf<Int>()
 
     inner class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
         private val totalValueTextView: TextView = itemView.findViewById(R.id.textViewTotalValue)
-        private val tallyLayout: LinearLayout = itemView.findViewById(R.id.layoutTally)
+        private val expandedLayout: LinearLayout = itemView.findViewById(R.id.expandedLayout)
+        private val transactionsListRecyclerView: RecyclerView = itemView.findViewById(R.id.recyclerViewTransactionsList)
 
-        fun bind(transaction: Transaction) {
-            val talliedAmounts = transaction.getTalliedAmounts()
+        fun bind(transaction: Transaction, position: Int) {
             titleTextView.text = transaction.title
+            totalValueTextView.text = transaction.getTotalAmount().toString()
 
-            if (talliedAmounts.size == 1) {
-                // Single tally
-                totalValueTextView.text = "${talliedAmounts[0].amount} (${talliedAmounts[0].count})"
-                tallyLayout.visibility = View.GONE
-            } else {
-                // Multiple tallies: clickable line
-                totalValueTextView.text = "${transaction.getTotalAmount()}"
-                tallyLayout.visibility = View.VISIBLE
-                tallyLayout.removeAllViews()
+            // Set up the tally RecyclerView
+            transactionsListRecyclerView.layoutManager = LinearLayoutManager(itemView.context)
+            transactionsListRecyclerView.adapter = TransactionDetailListAdapter(
+                transaction.getTalliedAmounts(),
+                transactionSection,
+                updateSectionSelection
+                )
 
-                for (tally in talliedAmounts) {
-                    val tallyTextView = TextView(itemView.context).apply {
-                        text = "${tally.count} x ${tally.amount}"
-                    }
-                    tallyLayout.addView(tallyTextView)
+            // Set visibility based on whether the position is expanded
+            expandedLayout.visibility = if (expandedPositions.contains(position)) View.VISIBLE else View.GONE
+
+            // Handle click to expand/collapse
+            itemView.setOnClickListener {
+                if (expandedPositions.contains(position)) {
+                    expandedPositions.remove(position)
+                } else {
+                    expandedPositions.add(position)
                 }
-
-                itemView.setOnClickListener {
-                    // Toggle visibility of tallies
-                    tallyLayout.visibility = if (tallyLayout.visibility == View.VISIBLE) {
-                        View.GONE
-                    } else {
-                        View.VISIBLE
-                    }
-                }
+                notifyItemChanged(position)
+                updateSectionSelection(transactionSection)
             }
         }
     }
@@ -54,7 +58,7 @@ class TransactionAdapter(private val transactions: MutableList<Transaction>) :
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        holder.bind(transactions[position])
+        holder.bind(transactions[position], position)
     }
 
     override fun getItemCount(): Int {

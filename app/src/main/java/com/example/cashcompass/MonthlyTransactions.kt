@@ -15,8 +15,12 @@ data class MonthlyTransactions(
         sections.add(section)
     }
 
-    fun getSectionById(sectionId: Int): TransactionSection? {
+    private fun getSectionById(sectionId: Int): TransactionSection? {
         return sections.find { it.id == sectionId }
+    }
+
+    fun removeSection(sectionId: Int) {
+        sections.removeIf { it.id == sectionId }
     }
 
     fun addTransactionToSection(sectionId: Int, transaction: Transaction) {

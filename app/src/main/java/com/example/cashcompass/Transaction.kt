@@ -1,6 +1,7 @@
 package com.example.cashcompass
 
-data class Tally(
+data class TalliedAmounts(
+    val dates: String,
     val amount: Double,
     val count: Int
 )
@@ -8,6 +9,7 @@ data class Tally(
 data class Transaction(
     private var id: Int? = null,
     val title: String,
+    val dates: MutableList<String> = mutableListOf(),
     private val _amounts: MutableList<Double> = mutableListOf()
 ) {
 
@@ -23,13 +25,16 @@ data class Transaction(
         return _amounts.first()
     }
 
-    fun getTalliedAmounts(): List<Tally> {
-        val amountCountMap = mutableMapOf<Double, Int>()
+    fun getTalliedAmounts(): List<TalliedAmounts> {
+        val amountCountMap = mutableMapOf<Double, MutableList<String>>()
 
-        for (amount in _amounts) {
-            amountCountMap[amount] = amountCountMap.getOrDefault(amount, 0) + 1
+        for ((index, amount) in _amounts.withIndex()) {
+            amountCountMap.computeIfAbsent(amount) { mutableListOf() }.add(dates[index])
         }
-        return amountCountMap.map { (amount, count) -> Tally(amount, count) }
+
+        return amountCountMap.map { (amount, dateList) ->
+            TalliedAmounts(dateList.joinToString(", "), amount, dateList.size)
+        }
     }
 
     fun getTotalAmount(): Double {

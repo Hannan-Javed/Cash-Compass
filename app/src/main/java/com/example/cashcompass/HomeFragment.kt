@@ -17,7 +17,29 @@ class HomeFragment : Fragment() {
     private lateinit var buttonAddSection: Button
     private lateinit var buttonAddTransaction: Button
     private lateinit var sectionAdapter: SectionAdapter
-
+    private val randomTransactions: MutableList<Transaction> =
+        mutableListOf(
+            Transaction(
+                dates = mutableListOf("2023-01-01"),
+                title = "Transaction 1",
+                _amounts = mutableListOf(10.0)
+            ),
+            Transaction(
+                dates = mutableListOf("2023-01-02"),
+                title = "Transaction 2",
+                _amounts = mutableListOf(20.0)
+            ),
+            Transaction(
+                dates = mutableListOf("2023-01-03"),
+                title = "Transaction 3",
+                _amounts = mutableListOf(30.0)
+            ),
+            Transaction(
+                dates = mutableListOf("2023-01-04"),
+                title = "Transaction 4",
+                _amounts = mutableListOf(40.0)
+            ),
+            )
     // Hardcoded MonthlyTransactions with a default section
     private val monthlyTransactions = MonthlyTransactions(
         month = 1,
@@ -30,8 +52,7 @@ class HomeFragment : Fragment() {
             )
         )
     )
-
-    private var selectedSection: TransactionSection = monthlyTransactions.sections.first()
+    private var selectedSection: Int = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,10 +76,12 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        sectionAdapter =
-            SectionAdapter(monthlyTransactions.sections, { section: TransactionSection ->
-                selectedSection = section
-            })
+        sectionAdapter = SectionAdapter(
+            monthlyTransactions.sections,
+            selectedSection
+        ) { section ->
+            selectedSection = section
+        }
         recyclerView.adapter = sectionAdapter
     }
 
@@ -70,16 +93,17 @@ class HomeFragment : Fragment() {
                 currency = "USD"
             )
             monthlyTransactions.addSection(newSection)
-            selectedSection = newSection
-            sectionAdapter.notifyDataSetChanged()
+            sectionAdapter.updateSectionSelection(newSection.id)
+            // now selectedSection is updated to the new section inside adapter
+            sectionAdapter.notifyItemChanged(selectedSection - 1)
         }
 
         buttonAddTransaction.setOnClickListener {
             monthlyTransactions.addTransactionToSection(
-                selectedSection.id,
-                Transaction(title = "New Transaction", _amounts  = mutableListOf(10.0))
+                monthlyTransactions.sections[selectedSection - 1].id,
+                randomTransactions[(0..3).random()]
             )
-            sectionAdapter.notifyDataSetChanged()
+            sectionAdapter.notifyItemChanged(selectedSection - 1)
         }
     }
 }

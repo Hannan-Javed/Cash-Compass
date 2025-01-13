@@ -17,6 +17,7 @@ data class TransactionSection(
                 it.find { transaction -> transaction.title == t.title }
             if (existingTransaction != null) {
                 existingTransaction.addAmount(t.getFirstAmount())
+                existingTransaction.dates.addAll(t.dates)
             } else {
                 t.setId(it.size + 1)
                 it.add(t)

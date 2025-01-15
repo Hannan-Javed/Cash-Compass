@@ -3,7 +3,7 @@ package com.example.cashcompass
 data class TalliedAmounts(
     val dates: String,
     val amount: Double,
-    val count: Int
+    var tallyCount: Int
 )
 
 data class Transaction(

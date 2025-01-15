@@ -17,6 +17,10 @@ data class Transaction(
         this.id = id
     }
 
+    fun getId(): Int? {
+        return id
+    }
+
     fun addAmount(value: Double) {
         _amounts.add(value)
     }

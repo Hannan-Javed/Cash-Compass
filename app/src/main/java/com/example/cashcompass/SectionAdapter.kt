@@ -7,45 +7,52 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 class SectionAdapter(
-    private val monthlyTransactions: MonthlyTransactions,
     private var selectedSectionId: Int,
-    private val onSectionClick: (Int) -> Unit
-) : RecyclerView.Adapter<SectionAdapter.SectionViewHolder>() {
+    private val onSectionClick: (Int) -> Unit,
+    private val onDeleteSection: (Int) -> Unit
+) : ListAdapter<TransactionSection, SectionAdapter.SectionViewHolder>(DIFF_CALLBACK) {
 
-    private val adapterMap = mutableMapOf<Int, TransactionAdapter>()
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<TransactionSection>() {
+            override fun areItemsTheSame(
+                oldItem: TransactionSection,
+                newItem: TransactionSection
+            ): Boolean {
+                return oldItem.id == newItem.id
+            }
 
-    fun onSectionDelete(sectionId: Int) {
-        val sectionIndex = monthlyTransactions.sections.indexOfFirst { it.id == sectionId }
-        if (sectionIndex != -1) {
-            // Remove the section's transactions adapter from the map
-            adapterMap.remove(sectionId)
-
-            // Remove the section from the monthly transactions
-            monthlyTransactions.removeSection(sectionId)
-
-            // Notify the adapter of the item removal
-            notifyItemRemoved(sectionIndex)
-
-            // Update selected section if necessary
-            if (selectedSectionId == sectionId) {
-                updateSectionSelection(monthlyTransactions.sections.first().id)
+            override fun areContentsTheSame(
+                oldItem: TransactionSection,
+                newItem: TransactionSection
+            ): Boolean {
+                return oldItem == newItem
             }
         }
     }
 
-    val updateSectionSelection = { sectionId: Int ->
-            val previousSelected = selectedSectionId
-            selectedSectionId = sectionId
-            val previousIndex = monthlyTransactions.sections.indexOfFirst { it.id == previousSelected }
-            val newIndex = monthlyTransactions.sections.indexOfFirst { it.id == sectionId }
+    // Map to hold TransactionAdapters for each section
+    private val adapterMap = mutableMapOf<Int, TransactionAdapter>()
 
-            if (previousIndex != -1) notifyItemChanged(previousIndex)
-            if (newIndex != -1) notifyItemChanged(newIndex)
-            onSectionClick(sectionId)
+    // Update selected section and notify adapter about changes
+    fun updateSelectedSection(sectionId: Int) {
+        val previousSelected = selectedSectionId
+        selectedSectionId = sectionId
+
+        val previousPosition = currentList.indexOfFirst { it.id == previousSelected }
+        val newPosition = currentList.indexOfFirst { it.id == sectionId }
+
+        if (previousPosition != -1) {
+            notifyItemChanged(previousPosition)
+        }
+        if (newPosition != -1) {
+            notifyItemChanged(newPosition)
+        }
     }
 
     inner class SectionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -57,19 +64,20 @@ class SectionAdapter(
         fun bind(section: TransactionSection) {
             titleTextView.text = section.title
 
-            if (section.id == 1) {
-                deleteImageView.visibility = View.GONE
-            } else {
-                deleteImageView.visibility = View.VISIBLE
-            }
+            // Show/hide delete button based on section ID
+            deleteImageView.visibility = if (section.id == 1) View.GONE else View.VISIBLE
 
-            itemView.setBackgroundColor(if (section.id == selectedSectionId) Color.LTGRAY else Color.WHITE)
+            // Highlight the selected section
+            itemView.setBackgroundColor(
+                if (section.id == selectedSectionId) Color.LTGRAY else Color.WHITE
+            )
 
+            // Set up the TransactionAdapter for this section
             val transactionAdapter = adapterMap.getOrPut(section.id) {
                 TransactionAdapter(
-                    section.transactions ?: emptyList(),
+                    section.transactions?: emptyList<Transaction>().toMutableList(),
                     section.id,
-                    updateSectionSelection
+                    onSectionClick
                 )
             }
 
@@ -77,23 +85,25 @@ class SectionAdapter(
             transactionsRecyclerView.adapter = transactionAdapter
 
             deleteImageView.setOnClickListener {
-                onSectionDelete(section.id)
+                onDeleteSection(section.id)
+                notifyItemRemoved(adapterPosition)
             }
 
             sectionLayout.setOnClickListener {
-                updateSectionSelection(section.id)
+                onSectionClick(section.id)
+                updateSelectedSection(section.id)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SectionViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_section, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_section, parent, false)
         return SectionViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: SectionViewHolder, position: Int) {
-        holder.bind(monthlyTransactions.sections[position])
+        val section = getItem(position)
+        holder.bind(section)
     }
-
-    override fun getItemCount(): Int = monthlyTransactions.sections.size
 }

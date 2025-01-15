@@ -10,12 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 class TransactionAdapter(
-    private val transactions: List<Transaction>,
-    private var transactionSectionId: Int,
-    private val updateSectionSelection: (Int) -> Unit
+    private val transactions: MutableList<Transaction>,
+    private val transactionSectionId: Int,
+    private val onTransactionClick: (Int) -> Unit
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
 
-    // Set to keep track of expanded item positions
     private val expandedPositions = mutableSetOf<Int>()
 
     inner class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,9 +31,10 @@ class TransactionAdapter(
             transactionsListRecyclerView.layoutManager = LinearLayoutManager(itemView.context)
             transactionsListRecyclerView.adapter = TransactionDetailListAdapter(
                 transaction.getTalliedAmounts(),
-                transactionSectionId,
-                updateSectionSelection
-                )
+                transactionSectionId
+            ) { sectionId ->
+                onTransactionClick(sectionId)
+            }
 
             // Set visibility based on whether the position is expanded
             expandedLayout.visibility = if (expandedPositions.contains(position)) View.VISIBLE else View.GONE
@@ -47,7 +47,7 @@ class TransactionAdapter(
                     expandedPositions.add(position)
                 }
                 notifyItemChanged(position)
-                updateSectionSelection(transactionSectionId)
+                onTransactionClick(transactionSectionId)
             }
         }
     }
@@ -61,7 +61,5 @@ class TransactionAdapter(
         holder.bind(transactions[position], position)
     }
 
-    override fun getItemCount(): Int {
-        return transactions.size
-    }
+    override fun getItemCount(): Int = transactions.size
 }

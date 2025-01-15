@@ -19,7 +19,14 @@ data class TransactionSection(
                 existingTransaction.addAmount(t.getFirstAmount())
                 existingTransaction.dates.addAll(t.dates)
             } else {
-                t.setId(it.size + 1)
+                val newId = if (it.isNotEmpty()) {
+                    it.last().getId()?.plus(1)
+                } else {
+                    1
+                }
+                if (newId != null) {
+                    t.setId(newId)
+                }
                 it.add(t)
             }
         }

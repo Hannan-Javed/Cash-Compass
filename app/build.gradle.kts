@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cashcompass"
+    namespace = "com.example.tracmoney"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.cashcompass"
+        applicationId = "com.example.tracmoney"
         minSdk = 28
         targetSdk = 35
         versionCode = 1

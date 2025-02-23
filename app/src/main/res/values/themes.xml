@@ -1,13 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.CashCompass" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.TracMoney" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="colorPrimary">@color/turqoisetheme</item>
         <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>"
     </style>
 
-    <style name="Theme.CashCompass" parent="Base.Theme.CashCompass" />
+    <style name="Theme.TracMoney" parent="Base.Theme.TracMoney" />
 
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>

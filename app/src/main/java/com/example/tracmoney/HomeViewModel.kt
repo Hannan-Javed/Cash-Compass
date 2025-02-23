@@ -1,18 +1,19 @@
-package com.example.cashcompass
+package com.example.tracmoney
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.ViewModel
 
 class HomeViewModel : ViewModel() {
     companion object {
         var totalSectionsCreated: Int = 1
     }
-    private val _selectedSectionId = MutableLiveData<Int>()
-    val selectedSectionId: LiveData<Int> get() = _selectedSectionId
+    private val _selectedSectionId = MutableStateFlow(1)
+    val selectedSectionId: StateFlow<Int> get() = _selectedSectionId
 
-    private val _monthlyTransactions = MutableLiveData<MonthlyTransactions>()
-    val monthlyTransactions: MutableLiveData<MonthlyTransactions> get() = _monthlyTransactions
+
+    private val _monthlyTransactions = MutableStateFlow<MonthlyTransactions?>(null)
+    val monthlyTransactions: StateFlow<MonthlyTransactions?> get() = _monthlyTransactions
 
     init {
         _monthlyTransactions.value = MonthlyTransactions(
@@ -26,7 +27,7 @@ class HomeViewModel : ViewModel() {
                 )
             )
         )
-        _selectedSectionId.value = monthlyTransactions.value?.sections?.first()?.id
+        _selectedSectionId.value = monthlyTransactions.value?.sections?.first()?.id!!
     }
 
     fun getNewId(): Int {
@@ -48,7 +49,7 @@ class HomeViewModel : ViewModel() {
 
     fun deleteSection(sectionId: Int) {
         if (_selectedSectionId.value == sectionId) {
-            _selectedSectionId.value = monthlyTransactions.value?.sections?.first()?.id
+            _selectedSectionId.value = monthlyTransactions.value?.sections?.first()?.id!!
         }
         _monthlyTransactions.value?.sections?.removeIf { it.id == sectionId }
     }

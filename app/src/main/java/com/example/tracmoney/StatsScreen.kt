@@ -1,4 +1,4 @@
-package com.example.cashcompass
+package com.example.tracmoney
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme

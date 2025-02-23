@@ -1,11 +1,9 @@
-package com.example.cashcompass
-
+package com.example.tracmoney
 data class MonthlySpending(
     val title: String,
     val currency: String,
     val totalValue: Double
 )
-
 data class MonthlyTransactions(
     val month: Int,
     val year: Int,
@@ -15,24 +13,18 @@ data class MonthlyTransactions(
         sections.add(section)
     }
 
-    private fun getSectionById(sectionId: Int): TransactionSection? {
-        return sections.find { it.id == sectionId }
-    }
-
     fun removeSection(sectionId: Int) {
         sections.removeIf { it.id == sectionId }
     }
 
     fun addTransactionToSection(sectionId: Int, transaction: Transaction) {
-        val section = getSectionById(sectionId)
+        val section = sections.find { it.id == sectionId }
         section?.addTransaction(transaction)
     }
 
     fun getMonthlySpending(): List<MonthlySpending> {
-        val totalSpending = mutableListOf<MonthlySpending>()
-        for (section in sections) {
-            totalSpending.add(MonthlySpending(section.title, section.currency, section.getTotalAmount()))
+        return sections.map { section ->
+            MonthlySpending(section.title, section.currency, section.getTotalAmount())
         }
-        return totalSpending
     }
 }

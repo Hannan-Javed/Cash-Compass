@@ -1,4 +1,4 @@
-package com.example.cashcompass
+package com.example.tracmoney
 
 data class TalliedAmounts(
     val dates: String,
@@ -10,9 +10,8 @@ data class Transaction(
     private var id: Int? = null,
     val title: String,
     val dates: MutableList<String> = mutableListOf(),
-    private val _amounts: MutableList<Double> = mutableListOf()
+    private val amounts: MutableList<Double> = mutableListOf()
 ) {
-
     fun setId(id: Int) {
         this.id = id
     }
@@ -22,17 +21,16 @@ data class Transaction(
     }
 
     fun addAmount(value: Double) {
-        _amounts.add(value)
+        amounts.add(value)
     }
 
     fun getFirstAmount(): Double {
-        return _amounts.first()
+        return amounts.firstOrNull() ?: 0.0
     }
 
     fun getTalliedAmounts(): List<TalliedAmounts> {
         val amountCountMap = mutableMapOf<Double, MutableList<String>>()
-
-        for ((index, amount) in _amounts.withIndex()) {
+        for ((index, amount) in amounts.withIndex()) {
             amountCountMap.computeIfAbsent(amount) { mutableListOf() }.add(dates[index])
         }
 
@@ -42,6 +40,6 @@ data class Transaction(
     }
 
     fun getTotalAmount(): Double {
-        return _amounts.sum()
+        return amounts.sum()
     }
 }

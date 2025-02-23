@@ -1,4 +1,4 @@
-package com.example.cashcompass
+package com.example.tracmoney
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HistoryScreen() {
-    // Implement the UI for the history screen
     Column(
         modifier = Modifier
             .fillMaxSize()
